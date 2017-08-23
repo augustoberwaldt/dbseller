@@ -4,6 +4,9 @@ require_once '../vendor/autoload.php';
 
 $output = new Dbseller\OutputConsole();
 
+//\Dbseller\BackgroundProcess::open("php -S 0.0.0.0:8000 run.php");
+//\Dbseller\BackgroundProcess::open("curl http://localhost:8000");
+
 do {
 
     echo "+----------------------------------------+\n";
@@ -12,7 +15,8 @@ do {
     echo "|1 - Cadastrar task                      |\n";
     echo "|2 - Editar task                         |\n";
     echo "|3 - Deletar task                        |\n";
-    echo "|4 - Sair                                |\n";
+    echo "|4 - Lista de task                       |\n";
+    echo "|5 - Sair                                |\n";
     echo "+----------------------------------------+\n";
 
     $option = readline(":\n");
@@ -47,8 +51,13 @@ do {
 
             break;
 
-        readline();
+        case '4':
+
+            break;
+
     }
+
+    readline();
 
 } while($option != 4);
 

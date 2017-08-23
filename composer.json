@@ -1,5 +1,6 @@
 {
     "name": "root/dbseller",
+    "description" : "Teste para vaga de PHP DBSeller",
     "authors": [
         {
             "name": "AugustoBerwaldt",
