@@ -6,18 +6,56 @@ namespace Dbseller\Entity;
  */
 class Job
 {
-
+    /**
+     * @var  $id
+     */
     private $id;
 
-    private $crated;
+    /**
+     * @var  $title
+     */
+    private $title;
 
+    /**
+     * @var
+     */
+    private $created;
+
+    /**
+     * @var
+     */
     private $lastExec;
-
+    /**
+     * @var
+     */
     private $timer;
 
+    /**
+     * @var
+     */
     private $type;
 
+    /**
+     *
+     * @var
+     */
     private $pathExec;
+
+    /**
+     * @return mixed
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
+    /**
+     * @param mixed $title
+     */
+    public function setTitle($title)
+    {
+        $this->title = $title;
+    }
 
 
     /**
@@ -39,17 +77,17 @@ class Job
     /**
      * @return mixed
      */
-    public function getCrated()
+    public function getCreated()
     {
-        return $this->crated;
+        return $this->created;
     }
 
     /**
      * @param mixed $crated
      */
-    public function setCrated($crated)
+    public function setCreated($crated)
     {
-        $this->crated = $crated;
+        $this->created = $crated;
     }
 
     /**

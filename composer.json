@@ -7,7 +7,9 @@
             "email": "augusto.berwaldt@gmail.com"
         }
     ],
-    "require": {},
+    "require": {
+        "mongodb/mongodb": "^1.0.0"
+    },
     "autoload" : {
         "psr-4" : {
             "Dbseller\\": "src"

@@ -7,6 +7,7 @@ $output = new Dbseller\OutputConsole();
 //\Dbseller\BackgroundProcess::open("php -S 0.0.0.0:8000 run.php");
 //\Dbseller\BackgroundProcess::open("curl http://localhost:8000");
 
+
 do {
 
     echo "+----------------------------------------+\n";
@@ -26,7 +27,7 @@ do {
         case '1':
             $args = [];
             $args['title'] = readline("Informe um titulo para tarefa :\n");
-            $args['time']  = readline("Informe a frêquencia da tarefa exemplo(* * * * *) :\n");
+            $args['time']  = readline("Informe a frêquencia da tarefa exemplo(* * * * *) : \n");
             $args['exec']  = readline("Informe caminho da tarefa :\n");
 
             try {
@@ -55,6 +56,8 @@ do {
 
             break;
 
+        default :
+            throw new InvalidArgumentException("Opcao invalida");
     }
 
     readline();

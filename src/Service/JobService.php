@@ -3,16 +3,53 @@
 namespace Dbseller\service;
 
 use Dbseller\Repository\JobRepository;
+use Dbseller\Entity\Job;
+
 /**
- * Created by PhpStorm.
- * User: harley
- * Date: 22/08/17
- * Time: 16:56
+ * Classe responsável
+ *
+ * @author Augusto Berwaldt <augusto.marlon@moovin.com.br>
  */
 class JobService
 {
+    /**
+     * @var JobRepository
+     */
+    private $jobRepository;
 
+    /**
+     * JobService constructor.
+     */
+    public function __construct()
+    {
+        $this->jobRepository = new JobRepository();
 
+    }
+
+    /**
+     * Atualiza uma job no banco
+     *
+     * @param Job $job
+     */
+    public function update(\Dbseller\Entity\Job $job)
+    {
+        $this->jobRepository->save($job);
+    }
+
+    /**
+     * Busca todas jobs
+     */
+    public function getAll()
+    {
+       return $this->jobRepository->find([]);
+    }
+
+    /**
+     * Adiciona umajob
+     *
+     * @param $data
+     * @throws \Exception
+     */
     public  function create($data)
     {
 
@@ -28,9 +65,15 @@ class JobService
             throw new  \Exception("Caminho da tarefa não expecificado !");
         }
 
-        $jobRepository = new JobRepository();
+        $job = new Job();
 
-        $jobRepository->persist($data);
+        $job->setTitle($data['title']);
+        $job->setCreated(date("Y-m-d H:i:s"));
+        $job->setPathExec($data['exec']);
+        $job->setTimer($data['time']);
+        $job->setType('m');
+
+        $this->jobRepository->save($job);
     }
 
 

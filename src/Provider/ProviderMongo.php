@@ -4,9 +4,9 @@ namespace Dbseller\Provider;
 /**
  * Classe responsavel por fazer as  opera��es no MongoDB
  *
- * @author Augusto Berwaldt <augusto.marlon@moovin.com.br>
+ * @author Augusto Berwaldt <augusto.berwaldt@gmail.com.br>
  */
-class ProviderMongo
+class ProviderMongo extends Provider
 {
     /** @const string PORT_HOST_MONGODB */
     const HOST_MONGODB = 'mongodb://127.0.0.1';
@@ -64,10 +64,19 @@ class ProviderMongo
     public  static $conn;
 
     /**
+     * Gerencia driver
+     *
+     * @access private
+     * @name $manager
+     */
+     private $manager;
+
+
+    /**
      * MongoDriver constructor.
+     *
      * @param $dbname
      */
-
     protected  function __construct() {}
 
     /**
@@ -76,19 +85,34 @@ class ProviderMongo
      * @param $dbname
      * @return DriverMongo
      */
-    public  static function   getConnection($dbname)
+    public static function getConnection($dbname)
     {
         if (!isset(self::$conn)) {
             self::$conn = (new ProviderMongo())
                 ->setDatabase($dbname)
                 ->setConnection(
-                    new \MongoClient(self::HOST_MONGODB, [
-                        'socketTimeoutMS' => self::TIMEOUT
-                    ])
+                    new \MongoDB\Client(self::HOST_MONGODB . ':'. self::PORT_HOST_MONGODB)
                 );
         }
 
         return self::$conn;
+    }
+
+    /**
+     * @param $database
+     * @return $this
+     */
+    public  function  setManager(\MongoDB\Driver\Manager  $manager) {
+        $this->manager = $manager;
+        return $this;
+    }
+
+    /**
+     * @return \MongoDB\Driver\Manager $manager
+     */
+    public  function  getManager() {
+
+        return $this->manager;
     }
 
     /**
@@ -105,8 +129,9 @@ class ProviderMongo
      *
      * @param \MongoClient $connection
      */
-    public function  setConnection(\MongoClient $connection) {
+    public function  setConnection(\MongoDB\Client $connection) {
           $this->connection = $connection;
+          $this->setManager($connection->getManager());
           return $this;
     }
 
@@ -139,8 +164,7 @@ class ProviderMongo
     public function  getCollection()
     {
         return $this->connection
-            ->selectDB($this->database)
-            ->selectCollection($this->getCollectionName());
+                    ->selectCollection($this->database, $this->getCollectionName());
     }
 
     /**
@@ -149,53 +173,29 @@ class ProviderMongo
      *@param array $data
      *@return boolean
      */
-    public function  persist(array $data)
+    public function  persist( $data)
     {
+        $bulkWriteManager = new \MongoDB\Driver\BulkWrite;
+
         try {
-            $save = $this->getCollection()->insert($data);
+            $bulkWriteManager->insert($data);
+
         } catch(MongoCursorException $e) {
             return false;
         }
 
-        return ($save['ok'] == 1);
+        $this->manager
+             ->executeBulkWrite($this->getDbCollectionName(), $bulkWriteManager);
     }
 
     /**
-     * Persiste  varios array de dados no MongoDb.
+     * Retorna  nome no formato do mongodb
      *
-     * @param array $data
-     * @return bool
+     * @return string
      */
-    public function  persistAll(array $data)
+    private function getDbCollectionName()
     {
-        try {
-            $save = $this->getCollection()->batchInsert($data);
-        } catch(MongoCursorException $e) {
-            return false;
-        } catch (MongoCursorTimeoutException $et) {
-            return false;
-        }
-
-        return ($save['ok'] == 1);
-    }
-
-
-    /**
-     * Atualiza dados no mongoDb
-     *
-     * @param array $filter
-     * @param array $data
-     * @return bool
-     */
-    public  function update(array  $filter, array $data)
-    {
-        try {
-            $updated = $this->getCollection()->update($filter, $data);
-        } catch(MongoCursorException $e) {
-            return false;
-        }
-
-        return ($updated['ok'] == 1);
+        return $this->database. '.' .$this->getCollectionName();
     }
 
     /**
@@ -207,72 +207,12 @@ class ProviderMongo
      */
     public function  find(array $options , $typeArray = false)
     {
-        $offset = $options['offset'];
-        $limit  = $options['limit'];
-        $order  = $options['order'];
-        unset($options['offset'],
-            $options['limit'],
-            $options['order']
-        );
+        $query = new \MongoDB\Driver\Query($options);
+        $cursor = $this->manager->executeQuery($this->getDbCollectionName(),
+            $query)->toArray();
 
-
-        $cursor = $this->getCollection()->find($options);
-        $this->totalRows = $cursor->count();
-        if (!empty($offset)) {
-            $cursor = $cursor->skip($offset);
-        }
-
-        if (!empty($order)) {
-            $cursor->sort($order);
-        }
-
-        if (!empty($limit)) {
-            $cursor = $cursor->limit($limit);
-        }
-
-        if ($typeArray) {
-            return iterator_to_array($cursor);
-        }
 
         return $cursor;
-    }
-
-    /**
-     * Retorna total linhas tabela.
-     *
-     * @param  array  $options
-     *@return integer
-     */
-    public function getTotalRows(array $options = [])
-    {
-        return $this->find($options)->count();
-    }
-
-    /**
-     *Deleta a coleção e exclui seus índices.
-     *
-     *@return boolean
-     */
-    public  function drop()
-    {
-        $response = $this->getCollection()
-                        ->drop();
-        
-        return $response['ok'] == 1 ? true : false;
-    }
-
-    /**
-     * Cria indice  numa collection no mongo
-     *
-     * @param $fields
-     * @param bool $unique
-     * @return mixed
-     */
-    public function createIndex($fields, $unique = true)
-    {
-        return $this->getCollection()
-            ->createIndex($fields, ['unique' => $unique]);
-
     }
 
 }
