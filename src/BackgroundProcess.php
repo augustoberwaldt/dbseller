@@ -23,7 +23,7 @@ class BackgroundProcess
             $WshShell->Run($exec, 0, false);
         } else {
 
-            exec($exec . " > /dev/null 2>&1 &");
+            print exec($exec . " > /dev/null 2>&1 &");
         }
     }
 

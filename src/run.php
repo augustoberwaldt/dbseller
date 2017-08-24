@@ -32,7 +32,7 @@ while(1) {
         $now  = strtotime('now');
         $diff = ($now - $job->getLastExec()) / $type;
 
-        if ($diff == $job->getTime() || empty($job->getLastExec())) {
+        if ($diff == $job->getTimer() || empty($job->getLastExec())) {
 
             $exec = true;
 
@@ -44,10 +44,11 @@ while(1) {
         }
 
         if ($exec) {
+
             \Dbseller\BackgroundProcess::open($cmd);
             $job->setLastExec($now);
             $jobService->update($job, [
-                '_id' =>  $job->getId()
+                '_id' => $job->getId()
             ]);
         }
 

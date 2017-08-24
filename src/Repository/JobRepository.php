@@ -56,5 +56,17 @@ class JobRepository extends Repository
                     ->persist($data);
     }
 
+    /**
+     * Remove do banco
+     *
+     * @param array $filter
+     * @return integer
+     */
+    public function delete(array $filter)
+    {
+        return  $this->repository
+            ->setCollectionName(self::COLLECTION)
+            ->delete($filter);
+    }
 
 }

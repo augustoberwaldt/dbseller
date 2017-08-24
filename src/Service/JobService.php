@@ -76,5 +76,16 @@ class JobService
         $this->jobRepository->save($job);
     }
 
+    /**
+     * Remove do banco uma job
+     *
+     * @param Job $job
+     */
+    public  function removeById($id)
+    {
+        print $id;
+        $this->jobRepository->delete(['_id'=> $id]);
+    }
+
 
 }

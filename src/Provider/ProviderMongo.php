@@ -212,7 +212,27 @@ class ProviderMongo extends Provider
             ->executeBulkWrite($this->getDbCollectionName(), $bulkWriteManager);
     }
 
+    /**
+     * Remove do mongodb todos registros de acrodo com $filter
+     *
+     * @param $filter
+     * @return  integer
+     */
+    public function  delete($filter)
+    {
+        if (isset($filter['_id'])) {
+            $filter['_id'] = new \MongoDB\BSON\ObjectId($filter['_id']);
+        }
 
+        $bulkWriteManager = new \MongoDB\Driver\BulkWrite;
+        $bulkWriteManager->delete($filter, ['limit' => 1]);
+
+        $result = $this->manager
+            ->executeBulkWrite($this->getDbCollectionName(), $bulkWriteManager);
+
+
+        return $result->getDeletedCount();
+    }
 
     /**
      * Retorna  nome no formato do mongodb
@@ -236,7 +256,6 @@ class ProviderMongo extends Provider
         $query = new \MongoDB\Driver\Query($options);
         $cursor = $this->manager->executeQuery($this->getDbCollectionName(),
             $query)->toArray();
-
 
         return $cursor;
     }

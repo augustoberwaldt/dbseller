@@ -4,8 +4,11 @@ require_once '../vendor/autoload.php';
 
 $output = new Dbseller\OutputConsole();
 
-//\Dbseller\BackgroundProcess::open("php -S 0.0.0.0:8000 run.php");
-//\Dbseller\BackgroundProcess::open("curl http://localhost:8000");
+// veriifcar a porta se ja nao tem outro serviceo utilizando
+// vai ficar rodando o servidor embutido do php
+
+\Dbseller\BackgroundProcess::open("php -S 0.0.0.0:8000 run.php");
+\Dbseller\BackgroundProcess::open("curl http://localhost:8000");
 
 
 do {
@@ -14,16 +17,16 @@ do {
     echo "|                Menu Task               |\n";
     echo "+----------------------------------------+\n";
     echo "|1 - Cadastrar task                      |\n";
-    echo "|2 - Editar task                         |\n";
-    echo "|3 - Deletar task                        |\n";
-    echo "|4 - Lista de task                       |\n";
-    echo "|5 - Sair                                |\n";
+    echo "|2 - Deletar task                        |\n";
+    echo "|3 - Lista de task                       |\n";
+    echo "|4 - Sair                                |\n";
     echo "+----------------------------------------+\n";
 
     $option = readline(":\n");
     $jobService = new Dbseller\Service\JobService();
 
     switch ($option) {
+
         case '1':
             $args = [];
             $args['title'] = readline("Informe um titulo para tarefa :\n");
@@ -38,13 +41,13 @@ do {
             }
 
             break;
+
         case '2':
 
-            break;
-        case '3':
+            $ident = readline("Informe o identificador  da Tarefa :\n");
 
             try {
-                $jobService->remove();
+                $jobService->removeById($ident);
                 echo $output->getColoredString("Tarefa excluida com sucesso !", 'green'). "\n";
             } catch (\Exception $e) {
                 echo $output->getColoredString($e->getMessage(), 'red') . "\n";
@@ -52,12 +55,23 @@ do {
 
             break;
 
-        case '4':
+        case '3':
+
+            $listJobs = $jobService->getAll();
+
+            echo "\n+--------------------------------------------------------------------+\n";
+            echo  "Titulo                  | identificador            |           Exec  \n";
+            echo "\n";
+
+            foreach ($listJobs as $key => $job) {
+               echo ++$key ."-". $job->getTitle() ."             ".
+                   (string) $job->getId() ."          ". $job->getPathExec()."\n";
+            }
 
             break;
 
         default :
-            throw new InvalidArgumentException("Opcao invalida");
+            echo $output->getColoredString("Opcao invalida !", 'red');
     }
 
     readline();
