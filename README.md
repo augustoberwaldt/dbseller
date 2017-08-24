@@ -1,6 +1,6 @@
 # Teste dbseller Gerenciador de Tarefas
 
-##Dependecias
+## Dependecias
 
 <p> 
 PHP >= 5.6 <br> 
@@ -10,7 +10,7 @@ mongodb<br>
 docker<br>
 </p>
 
-###Iniciando o aplicativo
+### Iniciando o aplicativo
 
 <p>
   Primeiramente clone o projeto para seu workspace
@@ -28,5 +28,5 @@ digite : </p>
 <code> php  app.php </code>
 
 
-###Observação
+### Observação
 + Não esquesa de verificar se o servidor mongodb esta rodando na porta padrão.
