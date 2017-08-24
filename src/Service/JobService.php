@@ -31,9 +31,9 @@ class JobService
      *
      * @param Job $job
      */
-    public function update(\Dbseller\Entity\Job $job)
+    public function update(\Dbseller\Entity\Job $job, $filter)
     {
-        $this->jobRepository->save($job);
+        $this->jobRepository->save($job, $filter);
     }
 
     /**

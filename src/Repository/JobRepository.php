@@ -9,6 +9,10 @@ namespace Dbseller\Repository;
 class JobRepository extends Repository
 {
 
+    /**
+     * @const  string COLLECTION  nome da colecao no banco
+     */
+    const COLLECTION = 'Job';
 
     /**
      * Realiza busca da entity pelo parametro
@@ -18,7 +22,7 @@ class JobRepository extends Repository
     public function find(array $search = [])
     {
         $result = $this->repository
-            ->setCollectionName('Job')
+            ->setCollectionName(self::COLLECTION)
             ->find($search);
 
         return $this->convertResultToObject(\Dbseller\Entity\Job::class, $result);
@@ -30,19 +34,27 @@ class JobRepository extends Repository
      * @param \DBseller\Entity\Job $job
      * @return boolean | integer
      */
-    public function save(\DBseller\Entity\Job  $job)
+    public function save(\DBseller\Entity\Job  $job, $filter = [])
     {
-        return $this->repository
-            ->setCollectionName('Job')
-            ->persist([
-                'title'   => $job->getTitle(),
-                'created' => $job->getCreated(),
-                'type'    => $job->getType(),
-                'time'    => $job->getTimer(),
-                'pathExec'=> $job->getPathExec()
-            ]);
-    }
+        $data = [
+            'lastExec'=> $job->getLastExec(),
+            'title'   => $job->getTitle(),
+            'created' => $job->getCreated(),
+            'type'    => $job->getType(),
+            'time'    => $job->getTimer(),
+            'pathExec'=> $job->getPathExec()
+        ];
 
+        if (!empty($job->getId()) && !empty($filter)) {
+            return $this->repository
+                        ->setCollectionName(self::COLLECTION)
+                        ->update($data, $filter);
+        }
+
+        return $this->repository
+                    ->setCollectionName(self::COLLECTION)
+                    ->persist($data);
+    }
 
 
 }

@@ -173,7 +173,7 @@ class ProviderMongo extends Provider
      *@param array $data
      *@return boolean
      */
-    public function  persist( $data)
+    public function  persist($data)
     {
         $bulkWriteManager = new \MongoDB\Driver\BulkWrite;
 
@@ -187,6 +187,32 @@ class ProviderMongo extends Provider
         $this->manager
              ->executeBulkWrite($this->getDbCollectionName(), $bulkWriteManager);
     }
+
+    /**
+     * atualiza  um array de dados no MongoDb.
+     *
+     *@param array $data
+     *@param array $filter
+     *@return boolean
+     */
+    public function  update($data, $filter)
+    {
+        $bulkWriteManager = new \MongoDB\Driver\BulkWrite;
+
+        try {
+
+            $query = ['$set' => $data];
+
+            $bulkWriteManager->update($filter, $query);
+        } catch(MongoCursorException $e) {
+            return false;
+        }
+
+        $this->manager
+            ->executeBulkWrite($this->getDbCollectionName(), $bulkWriteManager);
+    }
+
+
 
     /**
      * Retorna  nome no formato do mongodb

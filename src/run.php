@@ -46,7 +46,9 @@ while(1) {
         if ($exec) {
             \Dbseller\BackgroundProcess::open($cmd);
             $job->setLastExec($now);
-            $jobService->update($job);
+            $jobService->update($job, [
+                '_id' =>  $job->getId()
+            ]);
         }
 
     }

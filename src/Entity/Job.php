@@ -69,7 +69,7 @@ class Job
     /**
      * @param mixed $id
      */
-    public function setId($id)
+    public function set_Id($id)
     {
         $this->id = $id;
     }
