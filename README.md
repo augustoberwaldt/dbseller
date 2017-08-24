@@ -29,4 +29,4 @@ digite : </p>
 
 
 ### Observação
-+ Não esquesa de verificar se o servidor mongodb esta rodando na porta padrão.
++ Não esqueça de verificar se o servidor mongodb esta rodando na porta padrão.
