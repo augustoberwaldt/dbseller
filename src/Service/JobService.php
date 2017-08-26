@@ -1,6 +1,6 @@
 <?php
 
-namespace Dbseller\service;
+namespace Dbseller\Service;
 
 use Dbseller\Repository\JobRepository;
 use Dbseller\Entity\Job;
@@ -54,15 +54,19 @@ class JobService
     {
 
         if (empty($data['title'])) {
-            throw new  \Exception("Titulo não informado !");
+            throw new  \InvalidArgumentException("Titulo não informado !");
         }
 
         if (empty($data['time'])) {
-            throw new  \Exception("Frequencia não informada !");
+            throw new  \InvalidArgumentException("Frêquencia não informada !");
         }
 
         if (empty($data['exec'])) {
-            throw new  \Exception("Caminho da tarefa não expecificado !");
+            throw new  \InvalidArgumentException("Caminho da tarefa não expecificado !");
+        }
+
+        if ($this->validateFormatTime($data['time'])) {
+            throw new  \InvalidArgumentException("Formato errado da frêquencia, (* * * * *) !");
         }
 
         $job = new Job();
@@ -71,9 +75,23 @@ class JobService
         $job->setCreated(date("Y-m-d H:i:s"));
         $job->setPathExec($data['exec']);
         $job->setTimer($data['time']);
-        $job->setType('m');
 
         $this->jobRepository->save($job);
+    }
+
+    /**
+     * Valida formato da frequencia da job
+     *
+     * @param $string
+     * @return bool
+     */
+    public function validateFormatTime($string)
+    {
+        preg_match( "/^((?:[1-9]?\d|\*)\s*(?:(?:[\/-][1-9]?\d)|(?:,[1-9]?\d)+)?\s*){5}$/",
+              $string
+            , $matches);
+
+        return empty($matches) ? false : true;
     }
 
     /**

@@ -17,27 +17,26 @@ class Job
     private $title;
 
     /**
-     * @var
+     * @var $created
      */
     private $created;
 
     /**
-     * @var
+     * @var $lastExec
      */
     private $lastExec;
     /**
-     * @var
+     * @var $timer
      */
     private $timer;
 
     /**
-     * @var
+     * @var $type
      */
     private $type;
 
     /**
-     *
-     * @var
+     * @var $pathExec
      */
     private $pathExec;
 

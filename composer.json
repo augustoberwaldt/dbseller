@@ -7,6 +7,9 @@
             "email": "augusto.berwaldt@gmail.com"
         }
     ],
+    "require-dev": {
+       "phpunit/phpunit": ">=4.8 < 6.0"
+    },
     "require": {
         "mongodb/mongodb": "^1.0.0"
     },

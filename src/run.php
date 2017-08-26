@@ -18,40 +18,45 @@ while(1) {
 
         $now = strtotime('now');
 
-        $type = 60;
+        $type = 60;// default
 
-        switch ($job->getType()) {
-            case 'm':
-                $type = 60;
-                break;
-            case 'h':
-                $type = 360;
-                break;
-        }
+        $times = explode(' ', $job->getTimer());
 
-        $now  = strtotime('now');
-        $diff = ($now - $job->getLastExec()) / $type;
+        $mapTime =  [
+             0 => 60, // minutos
+             1 => 360, // horas
+             2 => 86.400 // dia
+        ];
 
-        if ($diff == $job->getTimer() || empty($job->getLastExec())) {
+        foreach ($times as $index => $timeJob) {
 
-            $exec = true;
+            if ($timeJob != '*') {
+                $type = $mapTime[$index];
+            }
 
-            if (@file_exists($job->getPathExec())) {
-                $cmd = "php " . $job->getPathExec();
-            } else {
-                $cmd = "curl " . $job->getPathExec();
+            $now  = strtotime('now');
+            $diff = ($now - $job->getLastExec()) / $type;
+
+            if ($diff == $job->getTimer() || $timeJob == '*' || empty($job->getLastExec())) {
+
+                $exec = true;
+
+                if (@file_exists($job->getPathExec())) {
+                    $cmd = "php " . $job->getPathExec();
+                } else {
+                    $cmd = "curl " . $job->getPathExec();
+                }
+            }
+
+            if ($exec) {
+
+                \Dbseller\BackgroundProcess::open($cmd);
+                $job->setLastExec($now);
+                $jobService->update($job, [
+                    '_id' => $job->getId()
+                ]);
             }
         }
-
-        if ($exec) {
-
-            \Dbseller\BackgroundProcess::open($cmd);
-            $job->setLastExec($now);
-            $jobService->update($job, [
-                '_id' => $job->getId()
-            ]);
-        }
-
     }
 
 }
